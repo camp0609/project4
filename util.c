@@ -26,6 +26,35 @@
    - if init encounters any errors, it will call exit().
 ************************************************/
 void init(int port) {
+  int sockfd;
+  struct sockaddr_in serv_addr;
+  int addr_size;
+  serv_addr.sin_family = AF_INET;  
+  serv_addr.sin_port = htons(port);  
+  serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  
+  //create socket
+  if ((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {    
+    perror("Can't create socket");    
+    exit(1);  
+  }
+
+  //set re-use so do not need to wait for standard timeout if we shut-down or restart 
+  if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) == -1) {    
+    perror("Can't set socket option");    
+    exit(1);  
+  }
+
+  //bind socket 
+  if (bind(sockfd, (struct sockaddr *)&my_addr, sizeof(my_addr)) == -1) {    
+    perror("Could not bind");    
+    exit(1);  
+  }
+
+  if (listen(sockfd, BACKLOG) == -1) {    
+    perror("Could not listen");    
+    exit(1);  
+  }
 }
 
 /**********************************************
