@@ -15,6 +15,11 @@
 #include <unistd.h>
 #include "util.h"
 
+#define BACKLOG 20
+#define MSGSIZE 2048
+
+//global socket ?
+int sockfd;
 /**********************************************
  * init
    - port is the number of the port you want the server to be
@@ -26,7 +31,6 @@
    - if init encounters any errors, it will call exit().
 ************************************************/
 void init(int port) {
-  int sockfd;
   struct sockaddr_in serv_addr;
   int addr_size;
   serv_addr.sin_family = AF_INET;  
@@ -65,6 +69,14 @@ void init(int port) {
    - if the return value is negative, the request should be ignored.
 ***********************************************/
 int accept_connection(void) {
+  int client_fd;
+  struct sockaddr_in client_addr;
+  addr_size = sizeof(client_addr);
+  if ((client_fd = accept(sockfd, (struct sockaddr *)&client_addr, &addr_size)) == -1) {      
+    perror("Failed to accept connection");      
+    continue;    
+  }
+  return client_fd;
 }
 
 /**********************************************
@@ -83,6 +95,13 @@ int accept_connection(void) {
      specific 'connection'.
 ************************************************/
 int get_request(int fd, char *filename) {
+  //this isnt right 
+  char msg[MSGSIZE];    
+  int readsz = 0;    
+  if ((readsz = read(fd, msg, MSGSIZE-1)) >= 0) {      
+    msg[readsz] = '\0';      
+    fprintf(stderr, "Client sez %s", msg);    
+  }
 }
 
 /**********************************************
