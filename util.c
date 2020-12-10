@@ -15,11 +15,9 @@
 #include <unistd.h>
 #include "util.h"
 
-#define BACKLOG 20
-#define MSGSIZE 2048
-
-//global socket ?
 int sockfd;
+int backlog = 20;
+int MSGSIZE = 2048;
 /**********************************************
  * init
    - port is the number of the port you want the server to be
@@ -31,34 +29,36 @@ int sockfd;
    - if init encounters any errors, it will call exit().
 ************************************************/
 void init(int port) {
-  struct sockaddr_in serv_addr;
-  int addr_size;
-  serv_addr.sin_family = AF_INET;  
-  serv_addr.sin_port = htons(port);  
-  serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
   
-  //create socket
-  if ((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {    
-    perror("Can't create socket");    
-    exit(1);  
+  struct sockaddr_in my_addr;
+  int enable =1;
+
+  if((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
+    perror("Can't create socket\n");
+    exit(1);
   }
 
-  //set re-use so do not need to wait for standard timeout if we shut-down or restart 
-  if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) == -1) {    
-    perror("Can't set socket option");    
-    exit(1);  
+  my_addr.sin_family = AF_INET;
+  my_addr.sin_port = htons(port);
+  my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+  if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) == -1) {
+    perror("Can't set socket option\n");
+    exit(1);
   }
 
-  //bind socket 
-  if (bind(sockfd, (struct sockaddr *)&my_addr, sizeof(my_addr)) == -1) {    
-    perror("Could not bind");    
-    exit(1);  
+  if (bind(sockfd, (struct sockaddr *) &my_addr, sizeof(my_addr)) == -1) {
+    perror("Could not bind\n");
+    exit(1);
   }
 
-  if (listen(sockfd, BACKLOG) == -1) {    
-    perror("Could not listen");    
-    exit(1);  
+  if(listen(sockfd, backlog) == -1) {
+    perror("Could not listen\n");
+    exit(1);
   }
+
+
+  
 }
 
 /**********************************************
@@ -68,13 +68,14 @@ void init(int port) {
      get_request() instead.
    - if the return value is negative, the request should be ignored.
 ***********************************************/
-int accept_connection(void) {
+int accept_connection() {
   int client_fd;
   struct sockaddr_in client_addr;
-  addr_size = sizeof(client_addr);
-  if ((client_fd = accept(sockfd, (struct sockaddr *)&client_addr, &addr_size)) == -1) {      
-    perror("Failed to accept connection");      
-    continue;    
+  int addr_size = sizeof(client_addr);
+
+  if ((client_fd = accept(sockfd, (struct sockaddr *) &client_addr, (socklen_t *) &addr_size)) == -1) {
+    perror("Failed to accept connection\n");
+    exit(1);
   }
   return client_fd;
 }
@@ -95,14 +96,27 @@ int accept_connection(void) {
      specific 'connection'.
 ************************************************/
 int get_request(int fd, char *filename) {
-  //this isnt right 
-  char msg[MSGSIZE];    
-  int readsz = 0;    
-  if ((readsz = read(fd, msg, MSGSIZE-1)) >= 0) {      
-    msg[readsz] = '\0';      
-    fprintf(stderr, "Client sez %s", msg);    
+  char msg[MSGSIZE];
+  int i = 0;
+  int readbytes = 0;
+  char newlinechar[1];
+  int result;
+ 
+  while ((result = read(fd, newlinechar , sizeof(char))) >= 0) {
+    if (newlinechar[0] == '\n')
+       break;
+    else {
+       readbytes ++;
+       msg[i] = newlinechar[0];
+       i++;
+    }
   }
+  msg[readbytes] = '\0';
+  fprintf(stderr, "%s\n", msg);
+  return 0;
 }
+
+
 
 /**********************************************
  * return_result
@@ -124,6 +138,8 @@ int get_request(int fd, char *filename) {
    - returns 0 on success, nonzero on failure.
 ************************************************/
 int return_result(int fd, char *content_type, char *buf, int numbytes) {
+  close(sockfd);
+  return 0;
 }
 
 /**********************************************
@@ -136,4 +152,6 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
    - returns 0 on success, nonzero on failure.
 ************************************************/
 int return_error(int fd, char *buf) {
+  close(sockfd);
+  return 0;
 }
