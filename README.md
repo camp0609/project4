@@ -1,3 +1,4 @@
+## interim report ##
 The purpose of this program is to be a web server which uses POSIX socket programming. The webserver handles the following file types: HTML, JPEG, GIF, and TXT. A client connects to the server and requests a file, the web server then returns the file to the client.
 
 The code can be compiled using the Makefile in the Template folder. The program is then run on two seperate terminals. Terminal 1 runs the web server code, and terminal 2 acts as a client connecting to the server.
