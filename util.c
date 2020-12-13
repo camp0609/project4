@@ -184,15 +184,15 @@ int get_request(int fd, char *filename) {
 ************************************************/
 int return_result(int fd, char *content_type, char *buf, int numbytes) {
   char status[] = "HTTP/1.1 200 OK\n";
-  char type[] = "Content-Type: ";
+  char type[100] = "Content-Type: ";
   strcat(type, content_type);
   strcat(type, "\n");
-  char length[] = "Content-Length: ";
+  char length[100] = "Content-Length: ";
   char nbytes[100];
   sprintf(nbytes, "%i", numbytes);
   strcat(length, nbytes);
   strcat(length, "\n");
-  char connection[] = "Connection: Close\n";
+  char connection[100] = "Connection: Close\n";
   write(fd, status, strlen(status));
   write(fd, type, strlen(type));
   write(fd, length, strlen(length));
@@ -200,6 +200,7 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
   write(fd, "\n", 1);
   write(fd, buf, numbytes);
   close(fd);
+  //close(sockfd);
   return 0;
 }
 
@@ -213,11 +214,13 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
    - returns 0 on success, nonzero on failure.
 ************************************************/
 int return_error(int fd, char *buf) {
+  
   char status[] = "HTTP/1.1 200 Not Found \n";
   char type[] = "Content-Type: text/html \n";
-  char length[] = "Content-Length: ";
-  strcat(length, strlen(buf));
-  strcat(length, "\n");
+  char length[100];
+  sprintf(length, "Content-Length: %zu\n", strlen(buf));
+ fprintf(stderr, "LENGTH: %s\n", length);
+  //printf("LENGTH: %s\n", length);
   char connection[] = "Connection: Close \n \n";
   write(fd, status, strlen(status));
   write(fd, type, strlen(type));
@@ -227,5 +230,6 @@ int return_error(int fd, char *buf) {
   if (close(fd) < 0) {
   		printf("failed to close socket on error");
   }
+  //close(sockfd);
   return 0;
 }
