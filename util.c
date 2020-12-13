@@ -215,7 +215,9 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
 int return_error(int fd, char *buf) {
   char status[] = "HTTP/1.1 200 Not Found \n";
   char type[] = "Content-Type: text/html \n";
-  char length[] = "Content-Length: 25 \n";
+  char length[] = "Content-Length: ";
+  strcat(length, strlen(buf));
+  strcat(length, "\n");
   char connection[] = "Connection: Close \n \n";
   write(fd, status, strlen(status));
   write(fd, type, strlen(type));
