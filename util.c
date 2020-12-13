@@ -96,23 +96,68 @@ int accept_connection() {
      specific 'connection'.
 ************************************************/
 int get_request(int fd, char *filename) {
-  char msg[MSGSIZE];
-  int i = 0;
+ char msg[MSGSIZE];
+  int i = 0, numOfspace = 0, j = 0, m = 0, length = 0;
   int readbytes = 0;
-  char newlinechar[1];
+  char save[1];
   int result;
+  char * requestType = malloc(10 * sizeof(char)); //Is it right to allocate it for 10 bytes?????
  
-  while ((result = read(fd, newlinechar , sizeof(char))) >= 0) {
-    if (newlinechar[0] == '\n')
+  while ((result = read(fd, save , sizeof(char))) >= 0) {
+    if (save[0] == '\n')
        break;
     else {
        readbytes ++;
-       msg[i] = newlinechar[0];
+       msg[i] = save[0];
        i++;
     }
   }
   msg[readbytes] = '\0';
+  for (int i = 0; i < readbytes; i++) {
+    if (msg[i] == ' ') {
+     numOfspace ++;
+    }
+    else {
+      if(numOfspace == 0) {
+        requestType[i] = msg[i];
+        j = i;
+      }
+      if (numOfspace == 1)
+      {
+       
+        filename[i-j-2] = msg[i];
+        m = i-j-2;
+      }
+    }
+  }
+  requestType[j+1] = '\0';
+  filename[m+1] = '\0';
+ 
+  if (numOfspace < 1||strcmp(requestType, "GET") != 0) {
+     fprintf(stderr, "%s\n", "Invalid request.");
+     close(sockfd); //do I need to close fd as well???????
+     return -1;
+  } 
+  for(int i = 0; filename[i+1] != '\0'; ++i)
+  {
+    length ++;
+    if((filename[i] == '.'&&filename[i+1]== '.') || (filename[i] == '/' && filename[i+1] == '/'))
+    {
+      fprintf(stderr, "%s\n", "Invalid request filename.");
+      close(sockfd); //do I need to close fd as well???????
+      return -1;
+    } 
+  }
+  if (length + 1 > 1023) {
+      fprintf(stderr, "%s\n", "Invalid request length.");
+      close(sockfd); //do I need to close fd as well???????
+      return -1;
+  } 
+
+
   fprintf(stderr, "%s\n", msg);
+  //fprintf(stderr, "%s\n", requestType);
+  //fprintf(stderr, "%s\n", filename);
   return 0;
 }
 
@@ -167,6 +212,11 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
    - returns 0 on success, nonzero on failure.
 ************************************************/
 int return_error(int fd, char *buf) {
-  close(sockfd);
+  if (send(fd, buf, strlen(buf), 0) < 0){
+      printf("failed to return error message");
+  }
+  if (close(fd) < 0) {
+  		printf("failed to close socket on error");
+  }
   return 0;
 }
