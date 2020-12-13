@@ -138,7 +138,22 @@ int get_request(int fd, char *filename) {
    - returns 0 on success, nonzero on failure.
 ************************************************/
 int return_result(int fd, char *content_type, char *buf, int numbytes) {
-  close(sockfd);
+  char status[] = "HTTP/1.1 200 OK\n";
+  char type[] = "Content-Type: ";
+  strcat(type, content_type);
+  strcat(type, "\n");
+  char length[] = "Content-Length: ";
+  char nbytes[] = itoa(numbytes);
+  strcat(length, nbytes);
+  strcat(length, "\n");
+  char connection[] = "Connection: Close\n";
+  write(fd, status, strlen(status));
+  write(fd, type, strlen(type));
+  write(fd, length, strlen(length));
+  write(fd, connection, strlen(length));
+  write(fd, "\n", 1);
+  write(fd, buf, numbytes);
+  close(fd);
   return 0;
 }
 
