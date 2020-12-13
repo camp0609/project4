@@ -197,6 +197,11 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
    - returns 0 on success, nonzero on failure.
 ************************************************/
 int return_error(int fd, char *buf) {
-  close(sockfd);
+  if (send(fd, buf, strlen(buf), 0) < 0){
+      printf("failed to return error message");
+  }
+  if (close(fd) < 0) {
+  		printf("failed to close socket on error");
+  }
   return 0;
 }
