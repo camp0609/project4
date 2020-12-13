@@ -188,7 +188,8 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
   strcat(type, content_type);
   strcat(type, "\n");
   char length[] = "Content-Length: ";
-  char nbytes[] = itoa(numbytes);
+  char nbytes[100];
+  sprintf(nbytes, "%i", numbytes);
   strcat(length, nbytes);
   strcat(length, "\n");
   char connection[] = "Connection: Close\n";
