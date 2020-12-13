@@ -213,9 +213,15 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
    - returns 0 on success, nonzero on failure.
 ************************************************/
 int return_error(int fd, char *buf) {
-  if (send(fd, buf, strlen(buf), 0) < 0){
-      printf("failed to return error message");
-  }
+  char status[] = "HTTP/1.1 200 Not Found \n";
+  char type[] = "Content-Type: text/html \n";
+  char length[] = "Content-Length: 25 \n";
+  char connection[] = "Connection: Close \n \n";
+  write(fd, status, strlen(status));
+  write(fd, type, strlen(type));
+  write(fd, length, strlen(length));
+  write(fd, connection, strlen(connection));
+  write(fd, buf, strlen(buf));
   if (close(fd) < 0) {
   		printf("failed to close socket on error");
   }
