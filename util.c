@@ -183,24 +183,26 @@ int get_request(int fd, char *filename) {
    - returns 0 on success, nonzero on failure.
 ************************************************/
 int return_result(int fd, char *content_type, char *buf, int numbytes) {
+  char response[MSGSIZE];
+  memset(response, '\0', MSGSIZE);
   char status[] = "HTTP/1.1 200 OK\n";
-  char type[100] = "Content-Type: ";
-  strcat(type, content_type);
-  strcat(type, "\n");
-  char length[100] = "Content-Length: ";
+  char type[] = "Content-Type: ";
+  strcat(response, status);
+  strcat(response, type);
+  strcat(response, content_type);
+  char length[] = "\nContent-Length: ";
+  strcat(response, length);
   char nbytes[100];
-  sprintf(nbytes, "%i", numbytes);
-  strcat(length, nbytes);
-  strcat(length, "\n");
-  char connection[100] = "Connection: Close\n";
-  write(fd, status, strlen(status));
-  write(fd, type, strlen(type));
-  write(fd, length, strlen(length));
-  write(fd, connection, strlen(length));
+  sprintf(nbytes, "%i\n", numbytes);
+  strcat(response, nbytes);
+  char connection[] = "Connection: Close\n";
+  strcat(response, connection);
+  //strcat(response, buf);
+  printf("%s", response);
+  write(fd, response, strlen(response));
   write(fd, "\n", 1);
   write(fd, buf, numbytes);
   close(fd);
-  //close(sockfd);
   return 0;
 }
 
