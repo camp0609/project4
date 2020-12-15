@@ -185,22 +185,11 @@ int get_request(int fd, char *filename) {
 int return_result(int fd, char *content_type, char *buf, int numbytes) {
   char response[MSGSIZE];
   memset(response, '\0', MSGSIZE);
-  char status[] = "HTTP/1.1 200 OK\n";
-  char type[] = "Content-Type: ";
-  strcat(response, status);
-  strcat(response, type);
-  strcat(response, content_type);
-  char length[] = "\nContent-Length: ";
-  strcat(response, length);
-  char nbytes[100];
-  sprintf(nbytes, "%i\n", numbytes);
-  strcat(response, nbytes);
-  char connection[] = "Connection: Close\n";
-  strcat(response, connection);
-  //strcat(response, buf);
+  sprintf(response, 
+  "HTTP/1.1 200 OK\nContent-Type: %s\nContent-Length: %i\nConnection: Close\n\n",
+  content_type, numbytes);
   printf("%s", response);
   write(fd, response, strlen(response));
-  write(fd, "\n", 1);
   write(fd, buf, numbytes);
   close(fd);
   return 0;
