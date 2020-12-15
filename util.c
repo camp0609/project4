@@ -96,13 +96,13 @@ int accept_connection() {
      specific 'connection'.
 ************************************************/
 int get_request(int fd, char *filename) {
- char msg[MSGSIZE];
+  char msg[MSGSIZE];
   int i = 0, numOfspace = 0, j = 0, m = 0, length = 0;
   int readbytes = 0;
   char save[1];
   int result;
-  char * requestType = malloc(10 * sizeof(char)); //Is it right to allocate it for 10 bytes?????
- 
+  char * requestType = malloc(10 * sizeof(char)); 
+  
   while ((result = read(fd, save , sizeof(char))) >= 0) {
     if (save[0] == '\n')
        break;
@@ -135,7 +135,8 @@ int get_request(int fd, char *filename) {
  
   if (numOfspace < 1||strcmp(requestType, "GET") != 0) {
      fprintf(stderr, "%s\n", "Invalid request.");
-     close(sockfd); //do I need to close fd as well???????
+      memset(filename, '\0', strlen(filename));
+      close(fd); 
      return -1;
   } 
   for(int i = 0; filename[i+1] != '\0'; ++i)
@@ -144,21 +145,26 @@ int get_request(int fd, char *filename) {
     if((filename[i] == '.'&&filename[i+1]== '.') || (filename[i] == '/' && filename[i+1] == '/'))
     {
       fprintf(stderr, "%s\n", "Invalid request filename.");
-      close(sockfd); //do I need to close fd as well???????
+      memset(filename, '\0', strlen(filename));
+      close(fd); 
       return -1;
     } 
   }
   if (length + 1 > 1023) {
       fprintf(stderr, "%s\n", "Invalid request length.");
-      close(sockfd); //do I need to close fd as well???????
+      memset(filename, '\0', strlen(filename));
+      close(fd); 
       return -1;
   } 
-
+  
 
   fprintf(stderr, "%s\n", msg);
   
+  free(requestType);
+  
   return 0;
 }
+
 
 
 
