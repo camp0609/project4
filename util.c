@@ -206,21 +206,24 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
 ************************************************/
 int return_error(int fd, char *buf) {
   
-  char status[] = "HTTP/1.1 200 Not Found \n";
-  char type[] = "Content-Type: text/html \n";
+  char status[] = "HTTP/1.1 200 Not Found\n";
+  char type[] = "Content-Type: text/html\n";
   char length[100];
   sprintf(length, "Content-Length: %zu\n", strlen(buf));
- fprintf(stderr, "LENGTH: %s\n", length);
-  //printf("LENGTH: %s\n", length);
-  char connection[] = "Connection: Close \n \n";
+ 
+  char connection[] = "Connection: Close\n\n";
   write(fd, status, strlen(status));
+   
   write(fd, type, strlen(type));
   write(fd, length, strlen(length));
   write(fd, connection, strlen(connection));
+ 
   write(fd, buf, strlen(buf));
-  if (close(fd) < 0) {
+   
+  /*if (close(fd) < 0) {
   		printf("failed to close socket on error");
-  }
-  //close(sockfd);
+  }*/
+  close(fd);
+  
   return 0;
 }
