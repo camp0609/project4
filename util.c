@@ -156,8 +156,7 @@ int get_request(int fd, char *filename) {
 
 
   fprintf(stderr, "%s\n", msg);
-  //fprintf(stderr, "%s\n", requestType);
-  //fprintf(stderr, "%s\n", filename);
+  
   return 0;
 }
 
@@ -206,7 +205,9 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
 ************************************************/
 int return_error(int fd, char *buf) {
   
-  char status[] = "HTTP/1.1 200 Not Found\n";
+  
+  
+  /*char status[] = "HTTP/1.1 404 Not Found\n"; //when change to 404, werid things happen?????
   char type[] = "Content-Type: text/html\n";
   char length[100];
   sprintf(length, "Content-Length: %zu\n", strlen(buf));
@@ -217,13 +218,24 @@ int return_error(int fd, char *buf) {
   write(fd, type, strlen(type));
   write(fd, length, strlen(length));
   write(fd, connection, strlen(connection));
- 
-  write(fd, buf, strlen(buf));
+  //write(fd, "\n", 1);
+  write(fd, buf, strlen(buf));//why blank line and buf don't get print?????
    
-  /*if (close(fd) < 0) {
-  		printf("failed to close socket on error");
-  }*/
+  if (close(fd) < 0) {
+  		printf("failed to close socket on error"); //do we need error checking for close(fd)??????
+  }
+  close(fd);*/
+
+char response[MSGSIZE];
+  memset(response, '\0', MSGSIZE);
+  sprintf(response, 
+  "HTTP/1.1 404 Not Found\nContent-Type: text/html\nContent-Length: %zu\nConnection: Close\n\n",
+   strlen(buf));
+  printf("%s", response);
+  write(fd, response, strlen(response));
+  write(fd, buf, strlen(buf));
   close(fd);
   
   return 0;
+
 }
