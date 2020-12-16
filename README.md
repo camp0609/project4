@@ -1,7 +1,23 @@
+## Project Group: 25
+# Test machine: CSELAB_kh1250-03
+
+```Members:
+   Collin Campbell, camp0609
+   Clara Huang, huan2089
+   Hunter Bahl, bahlx038
+```
+
 The purpose of this program is to be a web server which uses POSIX socket programming. The web server handles the following file types: HTML, JPEG, GIF, and TXT. A client connects to the server and requests a file, the web server then returns the file to the client.
 
 The code can be compiled using the Makefile in the Template folder. The program is then run on two separate terminals. Terminal 1 runs the web server code, and terminal 2 acts as a client connecting to the server.
 
+The concrete code for running this project is as follows:
+```In terminal one:
+   ./web_server 12945 /home/huan2089/Desktop/p4/testing 10 10 0 20 3
+```
+```In terminal two:
+   wget -S --content-on-error http://127.0.0.1:12945/image/gif/0.gif
+```
 ---------------------------------------------------------------------------------------------
 The init function is run once in main and sets up a socket for receiving requests. This first creates a socket, sets up a re-use functionality to avoid timeouts, binds the socket, and listens.
 
@@ -18,14 +34,9 @@ The return_result function is run for every successful client request. If the fi
 return_error is run in the event that return_result is unsuccessful in returning a file to the client. Instead of returning a file, return_error creates a new text file with the filename containing a file not found message. This file not found message is returned to the client along with similar information regarding the exchange as the return_result function
 
 ---------------------------------------------------------------------------------------------
+We tried the extra credit part but did not finish it.
 
-## Project Group: 25
-
-```Members:
-   Collin Campbell, camp0609
-   Clara Huang, huan2089
-   Hunter Bahl, bahlx038
-```
+---------------------------------------------------------------------------------------------
 ```Credits:
    init: Collin, Clara
    accept_connection: Collin, Clara
