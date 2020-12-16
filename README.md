@@ -14,17 +14,18 @@ The return_result function is run for every successful client request. If the fi
 return_error is run in the event that return_result is unsuccessful in returning a file to the client. Instead of returning a file, return_error creates a new text file with the filename containing a file not found message. This file not found message is returned to the client along with similar information regarding the exchange as the return_result function.
 ---------------------------------------------------------------------------------------------
 
-Project Group: 25
+## Project Group: 25
 
-Members:
-Collin Campbell, camp0609
-Clara Huang, huan2089
-Hunter Bahl, bahlx038
-
-Credits:
-init: Collin, Clara
-accept_connection: Collin, Clara
-get_request: Clara
-return_result: Collin
-return_error: Hunter
-Debugging: All contributed
+```Members:
+   Collin Campbell, camp0609
+   Clara Huang, huan2089
+   Hunter Bahl, bahlx038
+```
+```Credits:
+   init: Collin, Clara
+   accept_connection: Collin, Clara
+   get_request: Clara
+   return_result: Collin
+   return_error: Hunter
+   Debugging: All contributed
+```
