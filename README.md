@@ -41,7 +41,7 @@ We tried the extra credit part but did not finish it.
 
 ---------------------------------------------------------------------------------------------
 ```
-   Credits:
+Credits:
    init: Collin, Clara
    accept_connection: Collin, Clara
    get_request: Clara
