@@ -167,7 +167,6 @@ int get_request(int fd, char *filename) {
 
 
 
-
 /**********************************************
  * return_result
    - returns the contents of a file to the requesting client
@@ -193,9 +192,17 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
   sprintf(response, 
   "HTTP/1.1 200 OK\nContent-Type: %s\nContent-Length: %i\nConnection: Close\n\n",
   content_type, numbytes);
-  printf("%s", response);
-  write(fd, response, strlen(response));
-  write(fd, buf, numbytes);
+  
+  if (write(fd, response, strlen(response)) == -1) {
+    fprintf(stderr, "%s", "faled to write response.\n");
+    close(fd);
+    return -1;
+  }
+  if (write(fd, buf, numbytes) == -1) {
+    fprintf(stderr, "%s", "faled to write file content.\n");
+    close(fd);
+    return -1;
+  }
   close(fd);
   return 0;
 }
@@ -210,38 +217,23 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
    - returns 0 on success, nonzero on failure.
 ************************************************/
 int return_error(int fd, char *buf) {
-  
-  
-  
-  /*char status[] = "HTTP/1.1 404 Not Found\n"; //when change to 404, werid things happen?????
-  char type[] = "Content-Type: text/html\n";
-  char length[100];
-  sprintf(length, "Content-Length: %zu\n", strlen(buf));
- 
-  char connection[] = "Connection: Close\n\n";
-  write(fd, status, strlen(status));
-   
-  write(fd, type, strlen(type));
-  write(fd, length, strlen(length));
-  write(fd, connection, strlen(connection));
-  //write(fd, "\n", 1);
-  write(fd, buf, strlen(buf));//why blank line and buf don't get print?????
-   
-  if (close(fd) < 0) {
-  		printf("failed to close socket on error"); //do we need error checking for close(fd)??????
-  }
-  close(fd);*/
-
-char response[MSGSIZE];
+  char response[MSGSIZE];
   memset(response, '\0', MSGSIZE);
   sprintf(response, 
   "HTTP/1.1 404 Not Found\nContent-Type: text/html\nContent-Length: %zu\nConnection: Close\n\n",
    strlen(buf));
-  printf("%s", response);
-  write(fd, response, strlen(response));
-  write(fd, buf, strlen(buf));
-  close(fd);
   
+  if (write(fd, response, strlen(response)) == -1) {
+    fprintf(stderr, "%s", "faled to write response.\n");
+    close(fd);
+    return -1;
+  }
+  
+  if (write(fd, buf, strlen(buf)) == -1) {
+    fprintf(stderr, "%s", "faled to write error messsage.\n");
+    close(fd);
+    return -1;
+  }
+  close(fd);
   return 0;
-
 }
