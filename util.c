@@ -32,7 +32,8 @@ void init(int port) {
   
   struct sockaddr_in my_addr;
   int enable =1;
-
+  
+  //create socket
   if((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
     perror("Can't create socket\n");
     exit(1);
@@ -41,7 +42,8 @@ void init(int port) {
   my_addr.sin_family = AF_INET;
   my_addr.sin_port = htons(port);
   my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-
+  
+  //enable re-use
   if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) == -1) {
     perror("Can't set socket option\n");
     exit(1);
@@ -113,6 +115,8 @@ int get_request(int fd, char *filename) {
     }
   }
   msg[readbytes] = '\0';
+  
+  //capture requestType and filename
   for (int i = 0; i < readbytes; i++) {
     if (msg[i] == ' ') {
      numOfspace ++;
@@ -133,6 +137,7 @@ int get_request(int fd, char *filename) {
   requestType[j+1] = '\0';
   filename[m+1] = '\0';
  
+  //error handling
   if (numOfspace < 1||strcmp(requestType, "GET") != 0) {
      fprintf(stderr, "%s\n", "Invalid request.");
       memset(filename, '\0', strlen(filename));
@@ -195,6 +200,7 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
   "HTTP/1.1 200 OK\nContent-Type: %s\nContent-Length: %i\nConnection: Close\n\n",
   content_type, numbytes);
   
+  // write response back to client
   if (write(fd, response, strlen(response)) == -1) {
     fprintf(stderr, "%s", "failed to write response.\n");
     close(fd);
@@ -234,6 +240,7 @@ int return_error(int fd, char *buf) {
     return -1;
   }
   
+  //write back error message
   if (write(fd, buf, strlen(buf)) == -1) {
     fprintf(stderr, "%s", "failed to write error messsage.\n");
     close(fd);
