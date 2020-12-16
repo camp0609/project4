@@ -22,8 +22,8 @@ Clara Huang, huan2089
 Hunter Bahl, bahlx038
 
 Credits:
-init: Collin
-accept_connection: Collin
+init: Collin, Clara
+accept_connection: Collin, Clara
 get_request: Clara
 return_result: Collin
 return_error: Hunter
