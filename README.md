@@ -13,10 +13,12 @@ The purpose of this program is to be a web server which uses POSIX socket progra
 The code can be compiled using the Makefile in the Template folder. The program is then run on two separate terminals. Terminal 1 runs the web server code, and terminal 2 acts as a client connecting to the server.
 
 The concrete code for running this project is as follows:
-```In terminal one:
+```
+In terminal one:
    ./web_server 12945 /home/huan2089/Desktop/p4/testing 10 10 0 20 3
 ```
-```In terminal two:
+```
+In terminal two:
    wget -S --content-on-error http://127.0.0.1:12945/image/gif/0.gif
 ```
 ---------------------------------------------------------------------------------------------
