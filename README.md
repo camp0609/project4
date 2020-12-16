@@ -1,7 +1,8 @@
 # Project Group: 25
-## Test machine: CSELAB_kh1250-03
 
-```Members:
+```
+Test machine: CSELAB_kh1250-03
+Members:
    Collin Campbell, camp0609
    Clara Huang, huan2089
    Hunter Bahl, bahlx038
