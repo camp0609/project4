@@ -1,5 +1,5 @@
-## Project Group: 25
-# Test machine: CSELAB_kh1250-03
+# Project Group: 25
+## Test machine: CSELAB_kh1250-03
 
 ```Members:
    Collin Campbell, camp0609
